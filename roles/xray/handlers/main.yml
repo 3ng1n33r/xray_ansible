@@ -1,0 +1,5 @@
+---
+- name: restart {{ xray_service }}
+  service:
+    name: "{{ xray_service }}"
+    state: restarted
