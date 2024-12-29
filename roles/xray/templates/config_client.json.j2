@@ -17,7 +17,6 @@
                 "type": "field",
                 "domain": [
                     "regexp:.*\\.ru$",
-                    "geosite:youtube",
                     "geosite:vk",
                     "geosite:yandex",
                     "geosite:category-gov-ru"
@@ -28,8 +27,8 @@
     },
     "inbounds": [
         {
-            "listen": "127.0.0.1", 
-            "port": 1080, 
+            "listen": "127.0.0.1",
+            "port": 1080,
             "protocol": "socks",
             "settings": {
                 "udp": true
@@ -52,10 +51,10 @@
                 "vnext": [
                     {
                         "address": "{{ ansible_default_ipv4.address }}", 
-                        "port": 443, 
+                        "port": 443,
                         "users": [
                             {
-                                "id": "{{ uuid.stdout }}", // Needs to match server side
+                                "id": "{{ uuid.stdout }}",
                                 "encryption": "none",
                                 "flow": "xtls-rprx-vision"
                             }
@@ -67,12 +66,12 @@
                 "network": "tcp",
                 "security": "reality",
                 "realitySettings": {
-                    "show": false, // Optional, if true, output debugging information
-                    "fingerprint": "chrome", 
-                    "serverName": "{{ realityDomain }}", // A website that support TLS1.3 and h2. If your dest is `1.1.1.1:443`, then leave it empty
-                    "publicKey": "{{ publicKey.stdout }}", // run `xray x25519` to generate. Public and private keys need to be corresponding.
-                    "spiderX": "/", // If your dest is `1.1.1.1:443`, then you can fill it with `/dns-query/` or just leave it empty
-                    "shortId": "{{ shortId.stdout }}" // Required
+                    "show": false,
+                    "fingerprint": "chrome",
+                    "serverName": "{{ realityDomain }}",
+                    "publicKey": "{{ publicKey.stdout }}",
+                    "spiderX": "/",
+                    "shortId": "{{ shortId.stdout }}"
                 }
             },
             "tag": "proxy"

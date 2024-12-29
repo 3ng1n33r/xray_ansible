@@ -122,4 +122,3 @@
     dest: "configs/config.json"
   delegate_to: localhost
   become: false
-
