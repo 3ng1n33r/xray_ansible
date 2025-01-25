@@ -1,11 +1,10 @@
 ---
 - name: Install dependencies.
   package:
-    name: "{{ item }}"
+    name:
+      - unzip
+      - openssl
     state: present
-  with_items:
-    - unzip
-    - openssl
 
 - name: Check current Xray version.
   shell: "{{ xray_bin_path }} --version | head -n1 | awk '{print $2}'"
