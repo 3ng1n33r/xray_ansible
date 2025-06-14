@@ -1,28 +1,27 @@
 ---
 - name: Install dependencies.
-  package:
+  ansible.builtin.package:
     name:
       - unzip
       - openssl
     state: present
 
 - name: Check current Xray version.
-  shell: "{{ xray_bin_path }} --version | head -n1 | awk '{print $2}'"
+  ansible.builtin.shell: "{{ xray_bin_path }} --version | head -n1 | awk '{print $2}'"
   failed_when: false
   changed_when: false
   register: xray_version_check
 
 - name: Configure latest version.
-  include_tasks: config-version.yml
+  ansible.builtin.include_tasks: config-version.yml
   when: >
     xray_version is match("latest")
     or xray_version is not defined
 
 - name: Download and unarchive Xray into temporary location.
-  unarchive:
+  ansible.builtin.unarchive:
     src: "{{ xray_download_url }}"
     dest: /tmp
-    mode: 0755
     remote_src: true
   when: >
     xray_version_check.stdout is not defined
@@ -30,94 +29,98 @@
   register: xray_download_check
 
 - name: Move Xray binary into place.
-  copy:
+  ansible.builtin.copy:
     src: /tmp/xray
     dest: "{{ xray_bin_path }}"
-    mode: 0755
+    mode: '0755'
     remote_src: true
-  notify: restart {{ xray_service }}
+  notify: Restart {{ xray_service }}
   when: >
     xray_download_check is changed
     or xray_version_check.stdout | length == 0
 
 - name: Create Xray dirs.
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
-    mode: 0755
+    mode: '0755'
   with_items:
     - "{{ xray_config_path }}"
 
+- name: Tune the kernel parameters.
+  ansible.posix.sysctl:
+    name: '{{ item.key }}'
+    value: '{{ item.value }}'
+    sysctl_set: true
+    state: present
+    reload: true
+  with_dict: '{{ xray_sysctl_config }}'
+  ignore_errors: true
+
 - name: Generate key pair.
-  shell: "{{ xray_bin_path }} x25519 > {{ xray_config_path }}/keys"
+  ansible.builtin.shell: "{{ xray_bin_path }} x25519 > {{ xray_config_path }}/keys"
   args:
     creates: "{{ xray_config_path }}/keys"
 
 - name: Register private key.
-  shell: "cat {{ xray_config_path }}/keys | head -n1 | awk '{print $3}'"
+  ansible.builtin.shell: "cat {{ xray_config_path }}/keys | head -n1 | awk '{print $3}'"
   register: privateKey
 
 - name: Register public key.
-  shell: "cat {{ xray_config_path }}/keys | tail -n1 | awk '{print $3}'"
+  ansible.builtin.shell: "cat {{ xray_config_path }}/keys | tail -n1 | awk '{print $3}'"
   register: publicKey
 
 - name: Generate shortId.
-  shell: "openssl rand -hex 8 > {{ xray_config_path }}/shortId"
+  ansible.builtin.shell: "openssl rand -hex 8 > {{ xray_config_path }}/shortId"
   args:
     creates: "{{ xray_config_path }}/shortId"
 
 - name: Register shortId.
-  shell: "cat {{ xray_config_path }}/shortId"
+  ansible.builtin.shell: "cat {{ xray_config_path }}/shortId"
   register: shortId
 
 - name: Generate uuid.
-  shell: "{{ xray_bin_path }} uuid > {{ xray_config_path }}/uuid"
+  ansible.builtin.shell: "{{ xray_bin_path }} uuid > {{ xray_config_path }}/uuid{{ item }}"
   args:
-    creates: "{{ xray_config_path }}/uuid"
+    creates: "{{ xray_config_path }}/uuid{{ item }}"
+  with_sequence: start=0 end={{ xray_clients | int - 1 }}
 
 - name: Register uuid.
-  shell: "cat {{ xray_config_path }}/uuid"
-  register: uuid
+  ansible.builtin.shell: "cat {{ xray_config_path }}/uuid{{ item }}"
+  register: uuid_files
+  with_sequence: start=0 end={{ xray_clients | int - 1 }}
 
 - name: Copy Xray config.
-  template:
+  ansible.builtin.template:
     src: config_server.json.j2
     dest: "{{ xray_config_path }}/config.json"
+    mode: '0644'
   notify:
-    - restart {{ xray_service }}
+    - Restart {{ xray_service }}
 
 - name: Copy the Xray systemd unit file.
-  template:
+  ansible.builtin.template:
     src: xray.service.j2
     dest: /etc/systemd/system/xray.service
-    mode: 0644
+    mode: '0644'
   register: xray_service_check
 
-- name: Tune the kernel parameters.
-  sysctl:
-    name: '{{ item.key }}'
-    value: '{{ item.value }}'
-    sysctl_set: yes
-    state: present
-    reload: yes
-  with_dict: '{{ sysctl_config }}'
-  ignore_errors: yes
-
 - name: Reload systemd daemon if unit file is changed.
-  systemd:
+  ansible.builtin.systemd_service:
     daemon_reload: true
-  notify: restart {{ xray_service }}
+  notify: Restart {{ xray_service }}
   when: xray_service_check is changed
 
 - name: Ensure Xray is running and enabled at boot.
-  service:
+  ansible.builtin.systemd_service:
     name: "{{ xray_service }}"
     state: started
     enabled: true
 
 - name: Generate client config and saving to localhost.
-  template:
+  ansible.builtin.template:
     src: config_client.json.j2
-    dest: "configs/config.json"
+    dest: "configs/config{{ item }}.json"
   delegate_to: localhost
+  with_sequence: start=0 end={{ xray_clients | int - 1 }}
   become: false

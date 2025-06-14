@@ -1,17 +1,12 @@
 ---
-#https://github.com/XTLS/Xray-core/releases/download/v1.8.13/Xray-linux-64.zip
-#xray_version: '1.8.13'
 xray_version: 'latest'
 xray_download_url: 'https://github.com/XTLS/Xray-core/releases/download/v{{ xray_version }}/Xray-linux-64.zip'
 
 xray_bin_path: '/usr/local/bin/xray'
-
 xray_config_path: '/etc/xray'
-
 xray_service: xray
 
-#Optimizing kernel parameters
-sysctl_config:
+xray_sysctl_config:
   net.core.rmem_max: 67108864
   net.core.wmem_max: 67108864
   net.core.netdev_max_backlog: 10000

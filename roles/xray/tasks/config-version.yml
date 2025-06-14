@@ -2,7 +2,7 @@
 - name: Determine latest GitHub release (local).
   delegate_to: localhost
   become: false
-  uri:
+  ansible.builtin.uri:
     url: "https://api.github.com/repos/XTLS/Xray-core/releases/latest"
     body_format: json
   register: _github_release
@@ -11,9 +11,9 @@
   retries: 5
 
 - name: Set xray_version variable.
-  set_fact:
+  ansible.builtin.set_fact:
     xray_version: "{{ _github_release.json.tag_name | regex_replace('^v?([0-9\\.]+)$', '\\1') }}"
 
 - name: Set xray_download_url variable.
-  set_fact:
+  ansible.builtin.set_fact:
     xray_download_url: "https://github.com/XTLS/Xray-core/releases/download/v{{ xray_version }}/Xray-linux-64.zip"

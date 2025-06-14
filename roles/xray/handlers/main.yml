@@ -1,5 +1,5 @@
 ---
-- name: restart {{ xray_service }}
-  service:
+- name: Restart {{ xray_service }}
+  ansible.builtin.systemd_service:
     name: "{{ xray_service }}"
     state: restarted

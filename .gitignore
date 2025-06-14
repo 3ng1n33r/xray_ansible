@@ -1,2 +1,3 @@
-configs*
-!configs/.empty_dir
+test/
+configs/*
+!configs/qrencode_generator.py

@@ -50,11 +50,11 @@
             "settings": {
                 "vnext": [
                     {
-                        "address": "{{ ansible_default_ipv4.address }}", 
+                        "address": "{{ ansible_default_ipv4.address }}",
                         "port": 443,
                         "users": [
                             {
-                                "id": "{{ uuid.stdout }}",
+                                "id": "{{ uuid_files.results[item|int].stdout }}",
                                 "encryption": "none",
                                 "flow": "xtls-rprx-vision"
                             }
