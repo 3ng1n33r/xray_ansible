@@ -29,6 +29,7 @@
             "listen":"0.0.0.0",
             "port": 443, 
             "protocol": "vless",
+            "tag": "reality-in",
             "settings": {
                 "clients": [
                 {% for i in range(xray_clients) %}
@@ -76,6 +77,20 @@
         {
             "protocol": "freedom",
             "tag": "direct"
+        },
+	    {
+            "protocol": "blackhole",
+            "tag": "block"
         }
-    ]
+    ],
+    "routing": {
+      "rules": [
+        {
+          "type": "field",
+          "protocol": "bittorrent",
+          "outboundTag": "block"
+        }
+    ],
+    "domainStrategy": "IPIfNonMatch"
+  }
 }
