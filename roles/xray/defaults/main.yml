@@ -3,6 +3,7 @@ xray_version: 'latest'
 xray_download_url: 'https://github.com/XTLS/Xray-core/releases/download/v{{ xray_version }}/Xray-linux-64.zip'
 
 xray_bin_path: '/usr/local/bin/xray'
+xray_asset_path: '/usr/local/share/xray'
 xray_config_path: '/etc/xray'
 xray_service: xray
 

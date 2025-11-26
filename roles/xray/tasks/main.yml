@@ -28,6 +28,15 @@
     or xray_version not in xray_version_check.stdout
   register: xray_download_check
 
+- name: Create Xray dirs.
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  with_items:
+    - "{{ xray_config_path }}"
+    - "{{ xray_asset_path }}"
+
 - name: Move Xray binary into place.
   ansible.builtin.copy:
     src: /tmp/xray
@@ -39,13 +48,18 @@
     xray_download_check is changed
     or xray_version_check.stdout | length == 0
 
-- name: Create Xray dirs.
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: directory
-    mode: '0755'
+- name: Move Xray assets into place.
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ xray_asset_path }}"
+    mode: '0644'
+    remote_src: true
   with_items:
-    - "{{ xray_config_path }}"
+    - "/tmp/geosite.dat"
+    - "/tmp/geoip.dat"
+  when: >
+    xray_download_check is changed
+    or xray_version_check.stdout | length == 0
 
 - name: Tune the kernel parameters.
   ansible.posix.sysctl:

@@ -3,7 +3,7 @@
   hosts: all
   become: true
   vars:
-    xray_clients: 8
+    xray_clients: 9
     realityDomain: www.nvidia.com
 
   roles:
