@@ -1,10 +1,11 @@
 ---
-- name: Install and configure Xray XTLS-Reality.
+- name: Install and configure Xray.
   hosts: all
   become: true
   vars:
     xray_clients: 9
-    realityDomain: www.nvidia.com
+    xray_realityDomain: www.nvidia.com
+    xray_port: 443
 
   roles:
     - xray

@@ -27,7 +27,7 @@
     "inbounds": [
         {
             "listen":"0.0.0.0",
-            "port": 443, 
+            "port": "{{ xray_port }}", 
             "protocol": "vless",
             "tag": "reality-in",
             "settings": {
@@ -36,22 +36,24 @@
                 {
                     "id": "{{ uuid_files.results[i].stdout }}",
                     "level": 0,
-                    "email": "user{{ i }}@example.com",
-                    "flow": "xtls-rprx-vision"
+                    "email": "user{{ i }}@example.com"
                 }{% if not loop.last %},{% endif %}
                 {% endfor %}
                 ],
                 "decryption": "none"
             },
             "streamSettings": {
-                "network": "tcp",
+                "network": "xhttp",
+                "xhttpSettings": {
+                    "path": "/"
+                },
                 "security": "reality",
                 "realitySettings": {
                     "show": false,
-                    "dest": "{{ realityDomain }}:443",
+                    "dest": "{{ xray_realityDomain }}:443",
                     "xver": 0,
                     "serverNames": [
-                        "{{ realityDomain }}"
+                        "{{ xray_realityDomain }}"
                     ],
                     "privateKey": "{{ privateKey.stdout }}",
                     "minClientVer": "",

@@ -17,6 +17,7 @@
                 "type": "field",
                 "domain": [
                     "regexp:.*\\.ru$",
+                    "geosite:reddit",
                     "geosite:vk",
                     "geosite:yandex",
                     "geosite:category-gov-ru"
@@ -51,24 +52,27 @@
                 "vnext": [
                     {
                         "address": "{{ ansible_default_ipv4.address }}",
-                        "port": 443,
+                        "port": "{{ xray_port }}",
                         "users": [
                             {
                                 "id": "{{ uuid_files.results[item|int].stdout }}",
                                 "encryption": "none",
-                                "flow": "xtls-rprx-vision"
+                                "flow": ""
                             }
                         ]
                     }
                 ]
             },
             "streamSettings": {
-                "network": "tcp",
+                "network": "xhttp",
+                "xhttpSettings": {
+                    "path": "/"
+                },
                 "security": "reality",
                 "realitySettings": {
                     "show": false,
                     "fingerprint": "chrome",
-                    "serverName": "{{ realityDomain }}",
+                    "serverName": "{{ xray_realityDomain }}",
                     "publicKey": "{{ publicKey.stdout }}",
                     "spiderX": "/",
                     "shortId": "{{ shortId.stdout }}"
