@@ -25,7 +25,7 @@ try:
                 if users:
                     user = users[0]
                     user_id = user.get('id')
-                    flow = user.get('flow')
+                    encryption = user.get('encryption')
 
             stream_settings = outbound.get('streamSettings', {})
 
@@ -38,7 +38,7 @@ try:
             public_key = reality_settings.get('publicKey')
             short_id = reality_settings.get('shortId')
             
-            url = protocol+"://"+user_id+"@"+address+":"+str(port)+"?type="+network+"&security="+security+"&sni="+server_name+"&pbk="+public_key+"&flow="+flow+"&sid="+short_id+"&fp="+fingerprint+"#proxy"
+            url = protocol+"://"+user_id+"@"+address+":"+str(port)+"?type="+network+"&security="+security+"&sni="+server_name+"&pbk="+public_key+"&encryption="+encryption+"&sid="+short_id+"&fp="+fingerprint+"#proxy"
             output_file = f"qr-{args.file}.png"
             command = ["qrencode", "-o", output_file, url]
             subprocess.run(command)
