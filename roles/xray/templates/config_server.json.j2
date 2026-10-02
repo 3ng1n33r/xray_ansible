@@ -45,20 +45,16 @@
             "streamSettings": {
                 "network": "xhttp",
                 "xhttpSettings": {
-                    "path": "/"
+                    "path": "/x1"
                 },
                 "security": "reality",
                 "realitySettings": {
                     "show": false,
                     "dest": "{{ xray_realityDomain }}:443",
-                    "xver": 0,
                     "serverNames": [
                         "{{ xray_realityDomain }}"
                     ],
                     "privateKey": "{{ privateKey.stdout }}",
-                    "minClientVer": "",
-                    "maxClientVer": "",
-                    "maxTimeDiff": 0,
                     "shortIds": [
                         "{{ shortId.stdout }}"
                     ]

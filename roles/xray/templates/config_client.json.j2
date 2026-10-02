@@ -56,8 +56,7 @@
                         "users": [
                             {
                                 "id": "{{ uuid_files.results[item|int].stdout }}",
-                                "encryption": "none",
-                                "flow": ""
+                                "encryption": "none"
                             }
                         ]
                     }
@@ -65,12 +64,18 @@
             },
             "streamSettings": {
                 "network": "xhttp",
-                "xhttpSettings": {
-                    "path": "/"
-                },
                 "security": "reality",
+                "xhttpSettings": {
+                    "path": "/x1",
+                    "extra": {
+                    "xmux": {
+                        "maxConcurrency": 128,
+                        "cMaxReuseTimes": 0,
+                        "hMaxReusableSecs": 7200
+                        }              
+                    }
+                },
                 "realitySettings": {
-                    "show": false,
                     "fingerprint": "chrome",
                     "serverName": "{{ xray_realityDomain }}",
                     "publicKey": "{{ publicKey.stdout }}",
