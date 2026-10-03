@@ -5,6 +5,7 @@ xray_download_url: 'https://github.com/XTLS/Xray-core/releases/download/v{{ xray
 xray_bin_path: '/usr/local/bin/xray'
 xray_asset_path: '/usr/local/share/xray'
 xray_config_path: '/etc/xray'
+xray_certs_path: '/etc/xray/certs'
 xray_service: xray
 
 xray_user: xray

@@ -32,7 +32,9 @@ try:
             stream_settings = outbound.get('streamSettings', {})
             network = stream_settings.get('network')
             security = stream_settings.get('security')
-
+            # tls
+            tls_settings = stream_settings.get('tlsSettings', {})
+            server_name = tls_settings.get('serverName', '')
             # xhttpSettings
             xhttp_settings = stream_settings.get('xhttpSettings', {})
             path = xhttp_settings.get('path', '')
@@ -43,26 +45,15 @@ try:
                 json.dumps(extra, separators=(',', ':'))
             )
 
-            reality_settings = stream_settings.get('realitySettings', {})
-            fingerprint = reality_settings.get('fingerprint')
-            server_name = reality_settings.get('serverName')
-            public_key = reality_settings.get('publicKey')
-            short_id = reality_settings.get('shortId')
-            spider_x = reality_settings.get('spiderX', '')
-
             url = (
                 f"{protocol}://{user_id}@{address}:{port}"
                 f"?type={network}"
                 f"&security={security}"
-                f"&sni={server_name}"
-                f"&pbk={public_key}"
+                f"&sni={quote(server_name)}"
                 f"&encryption={encryption}"
-                f"&sid={short_id}"
-                f"&spx={quote(spider_x)}"
-                f"&fp={fingerprint}"
                 f"&path={quote(path)}"
                 f"&extra={extra_encoded}"
-                f"&mode=auto#{address}"
+                f"#{quote(server_name)}"
             )
 
             print(url)

@@ -27,7 +27,7 @@
     "inbounds": [
         {
             "listen":"0.0.0.0",
-            "port": "{{ xray_port }}", 
+            "port": {{ xray_port | int }},
             "protocol": "vless",
             "tag": "reality-in",
             "settings": {
@@ -44,20 +44,22 @@
             },
             "streamSettings": {
                 "network": "xhttp",
-                "xhttpSettings": {
-                    "path": "/x1"
-                },
-                "security": "reality",
-                "realitySettings": {
-                    "show": false,
-                    "dest": "{{ xray_domain }}:443",
-                    "serverNames": [
-                        "{{ xray_domain }}"
+                "security": "tls",
+                "tlsSettings": {
+                    "alpn": [
+                        "h2",
+                        "http/1.1"
                     ],
-                    "privateKey": "{{ privateKey.stdout }}",
-                    "shortIds": [
-                        "{{ shortId.stdout }}"
+                    "certificates": [
+                        {
+                            "certificateFile": "{{ xray_certs_path }}/fullchain.pem",
+                            "keyFile": "{{ xray_certs_path }}/privkey.pem"
+                        }
                     ]
+                },
+                "xhttpSettings": {
+                    "path": "/xhttp",
+                    "mode": "auto"
                 }
             },
             "sniffing": {
@@ -89,6 +91,7 @@
           "outboundTag": "block"
         },
         {
+            "type": "field",
             "domain": [
                 "geosite:category-gov-ru"
             ],

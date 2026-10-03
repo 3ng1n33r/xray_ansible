@@ -1,10 +1,11 @@
 ---
-- name: Install and configure Xray.
+- name: Install and configure Xray tls.
   hosts: all
   become: true
   vars:
-    xray_clients: 9
-    xray_realityDomain: www.nvidia.com
+    xray_clients: 10
+    xray_domain: "my.doma.in.com"
+    letsencrypt_email: "admin@mail.me"
     xray_port: 443
 
   roles:

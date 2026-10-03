@@ -2,6 +2,20 @@
     "log": {
         "loglevel": "warning"
     },
+    "dns": {
+        "queryStrategy": "UseIPv4",
+        "disableFallback": true,
+        "servers": [
+        {
+            "address": "https://1.1.1.1/dns-query",
+            "skipFallback": true
+        },
+        {
+            "address": "https://8.8.8.8/dns-query",
+            "skipFallback": true
+        }
+        ]
+    },
     "routing": {
         "domainStrategy": "IPIfNonMatch",
         "rules": [
@@ -51,8 +65,8 @@
             "settings": {
                 "vnext": [
                     {
-                        "address": "{{ ansible_default_ipv4.address }}",
-                        "port": "{{ xray_port }}",
+                        "address": "{{ xray_domain }}",
+                        "port": {{ xray_port | int }},
                         "users": [
                             {
                                 "id": "{{ uuid_files.results[item|int].stdout }}",
@@ -64,23 +78,24 @@
             },
             "streamSettings": {
                 "network": "xhttp",
-                "security": "reality",
+                "security": "tls",
+                "tlsSettings": {
+                    "serverName": "{{ xray_domain }}",
+                    "alpn": [
+                        "h2",
+                        "http/1.1"
+                    ],
+                    "allowInsecure": false
+                },
                 "xhttpSettings": {
-                    "path": "/x1",
+                    "path": "/xhttp",
                     "extra": {
                     "xmux": {
                         "maxConcurrency": 128,
                         "cMaxReuseTimes": 0,
                         "hMaxReusableSecs": 7200
-                        }              
+                        }
                     }
-                },
-                "realitySettings": {
-                    "fingerprint": "chrome",
-                    "serverName": "{{ xray_domain }}",
-                    "publicKey": "{{ publicKey.stdout }}",
-                    "spiderX": "/",
-                    "shortId": "{{ shortId.stdout }}"
                 }
             },
             "tag": "proxy"

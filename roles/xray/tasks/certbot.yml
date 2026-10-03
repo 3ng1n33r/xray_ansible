@@ -1,0 +1,60 @@
+---
+- name: Install snapd.
+  ansible.builtin.apt:
+    name: snapd
+    state: present
+    update_cache: true
+
+- name: Enable snapd.
+  ansible.builtin.systemd:
+    name: snapd
+    enabled: true
+    state: started
+
+- name: Install Certbot.
+  community.general.snap:
+    name: certbot
+    classic: true
+    state: present
+
+- name: Create certbot symlink.
+  ansible.builtin.file:
+    src: /snap/bin/certbot
+    dest: /usr/local/bin/certbot
+    state: link
+
+- name: Create Xray certificate directory.
+  ansible.builtin.file:
+    path: "{{ xray_certs_path }}"
+    state: directory
+    owner: root
+    group: "{{ xray_group }}"
+    mode: "0750"
+
+- name: Create Certbot deploy hook directory.
+  ansible.builtin.file:
+    path: /etc/letsencrypt/renewal-hooks/deploy
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Install Xray Certbot deploy hook.
+  ansible.builtin.template:
+    src: xray-cert-deploy.sh.j2
+    dest: /etc/letsencrypt/renewal-hooks/deploy/xray.sh
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: Obtain Let's Encrypt certificate.
+  ansible.builtin.command:
+    cmd: >
+      certbot certonly
+      --standalone
+      --non-interactive
+      --agree-tos
+      --email {{ letsencrypt_email }}
+      -d {{ xray_domain }}
+  args:
+    creates: "/etc/letsencrypt/live/{{ xray_domain }}/fullchain.pem"

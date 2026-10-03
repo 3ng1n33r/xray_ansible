@@ -78,6 +78,9 @@
     xray_download_check is changed
     or xray_version_check.stdout | length == 0
 
+- name: Generate certs for xray.
+  ansible.builtin.include_tasks: certbot.yml
+
 - name: Tune the kernel parameters.
   ansible.posix.sysctl:
     name: '{{ item.key }}'
@@ -87,28 +90,6 @@
     reload: true
   with_dict: '{{ xray_sysctl_config }}'
   ignore_errors: true
-
-- name: Generate key pair.
-  ansible.builtin.shell: "{{ xray_bin_path }} x25519 > {{ xray_config_path }}/keys"
-  args:
-    creates: "{{ xray_config_path }}/keys"
-
-- name: Register private key.
-  ansible.builtin.shell: "cat {{ xray_config_path }}/keys | head -n1 | awk '{print $3}'"
-  register: privateKey
-
-- name: Register public key.
-  ansible.builtin.shell: "cat {{ xray_config_path }}/keys | tail -n1 | awk '{print $3}'"
-  register: publicKey
-
-- name: Generate shortId.
-  ansible.builtin.shell: "openssl rand -hex 8 > {{ xray_config_path }}/shortId"
-  args:
-    creates: "{{ xray_config_path }}/shortId"
-
-- name: Register shortId.
-  ansible.builtin.shell: "cat {{ xray_config_path }}/shortId"
-  register: shortId
 
 - name: Generate uuid.
   ansible.builtin.shell: "{{ xray_bin_path }} uuid > {{ xray_config_path }}/uuid{{ item }}"
