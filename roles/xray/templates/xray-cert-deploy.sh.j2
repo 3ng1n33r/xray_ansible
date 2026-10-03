@@ -6,12 +6,12 @@ DOMAIN="{{ xray_domain }}"
 SRC="/etc/letsencrypt/live/${DOMAIN}"
 DST="{{ xray_certs_path }}"
 
-install -o root -g xray -m 0640 \
+install -o root -g {{ xray_group }} -m 0640 \
     "${SRC}/fullchain.pem" \
     "${DST}/fullchain.pem"
 
-install -o root -g xray -m 0640 \
+install -o root -g {{ xray_group }} -m 0640 \
     "${SRC}/privkey.pem" \
     "${DST}/privkey.pem"
 
-systemctl restart xray
+systemctl restart {{ xray_service }}
