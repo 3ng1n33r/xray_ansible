@@ -6,6 +6,21 @@
       - openssl
     state: present
 
+- name: Ensure group xray exists.
+  ansible.builtin.group:
+    name: "{{ xray_group }}"
+    system: true
+    state: present
+
+- name: Create xray user.
+  ansible.builtin.user:
+    name: "{{ xray_user }}"
+    group: "{{ xray_group }}"
+    shell: /usr/sbin/nologin
+    create_home: false
+    system: true
+    state: present
+
 - name: Check current Xray version.
   ansible.builtin.shell: "{{ xray_bin_path }} --version | head -n1 | awk '{print $2}'"
   failed_when: false
@@ -32,6 +47,8 @@
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
+    owner: root
+    group: "{{ xray_group }}"
     mode: '0755'
   with_items:
     - "{{ xray_config_path }}"

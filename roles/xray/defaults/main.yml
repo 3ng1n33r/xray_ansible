@@ -7,6 +7,9 @@ xray_asset_path: '/usr/local/share/xray'
 xray_config_path: '/etc/xray'
 xray_service: xray
 
+xray_user: xray
+xray_group: xray
+
 xray_sysctl_config:
   net.core.somaxconn: 4096
   net.ipv4.tcp_max_syn_backlog: 4096
